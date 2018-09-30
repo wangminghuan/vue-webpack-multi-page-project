@@ -1,0 +1,149 @@
+.Study_Center{
+    width: 100%;
+    padding-bottom: pxToRem(60px);
+    background: #ffffff;
+}
+.list {
+    width: 100%;
+    min-height: pxToRem(125px);
+    box-sizing: border-box;
+li{
+    position: relative;
+    padding-left: pxToRem(30px);
+    height:pxToRem(126px);
+    border-bottom: 1px solid #e5e5e5;
+
+p{
+    padding-top: pxToRem(25px);
+    padding-left: pxToRem(100px);
+    padding-right: pxToRem(30px);
+    font-size: 15px;
+
+}
+span{
+    font-size: 13px;
+    color: #959595;
+    padding-left: pxToRem(100px);
+    padding-right: pxToRem(30px);
+}
+.right{
+    position: absolute;
+    /*float: right;*/
+    width: pxToRem(70px);
+    height: pxToRem(70px);
+    top: 50%;
+    margin-top: pxToRem(-35px);
+    /*right: 30px;*/
+
+}
+}
+}
+.vux-slider > .vux-indicator > a > .vux-icon-dot, .vux-slider .vux-indicator-right > a > .vux-icon-dot{
+    display: none!important;
+
+}
+.vux-swiper{
+    height: pxToRem(314px)!important;
+}
+.common{
+    margin-left: pxToRem(30px);
+    margin-right: pxToRem(30px);
+    border: 1px solid#e5e5e5;
+}
+.navigation{
+    width: 100%;
+    height: pxToRem(89px);
+    background: #f5f5f5;
+    font-size: 15px;
+    line-height:pxToRem(89px);
+    text-align: center;
+    border-top: 1px solid#e5e5e5;
+    border-bottom: 1px solid#e5e5e5;
+    p{
+        color: #2fb3ff;
+        span{
+            color: #959595;
+        }
+    }
+}
+//文字说明样式
+.text_item{
+    margin-left: pxToRem(30px);
+    margin-right: pxToRem(30px);
+    margin-bottom: pxToRem(34px);
+
+    p{
+        margin-top: pxToRem(60px);
+        font-size: 24px;
+        font-weight: bold;
+        color: #353535;
+    }
+    ul{
+        margin-top: pxToRem(22px);
+        font-size: 15px;
+        margin-left:pxToRem(30px);
+        li{
+            line-height: pxToRem(45px);
+            list-style-type: disc;
+            color: #2fb3ff;
+            margin-top: pxToRem(10px) ;
+            span{
+                color: #333;
+                letter-spacing:0.5px
+            }
+        }
+    }
+    .item{
+        font-size: 16px;
+        color: #353535;
+        font-weight: 600;
+        margin-top: pxToRem(38px);
+    }
+    .item_us{
+        font-size: 15px;
+        color: #353535;
+        margin-top: pxToRem(38px);
+
+    }
+    .item_index{
+        font-size: 15px;
+        color: #353535;
+        margin-top: pxToRem(38px);
+
+    }
+    .item_p{
+        font-size:18px;
+    }
+    .text_tex{
+        margin-top: pxToRem(30px);
+        font-size: 15px;
+        font-weight: bold
+
+    }
+
+}
+.text{
+    margin: pxToRem(30px) pxToRem(30px) pxToRem(34px) pxToRem(30px);
+    font-size: 15px;
+    font-weight: bold;
+
+}
+.online{
+    position: absolute;
+    text-align:center;
+    float:right;
+    right: 0px;
+    width: pxToRem(161px);
+    height: pxToRem(44px);
+    top: 50%;
+    margin-top: -12px;
+    background: #2fb3ff;
+    color: #fff;
+    border-radius: pxToRem(8px);
+}
+.item_small{
+    font-size: 15px;
+    color: #353535;
+    font-weight: 600;
+    margin-top: pxToRem(38px);
+}

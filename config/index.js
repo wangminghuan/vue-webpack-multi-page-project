@@ -2,16 +2,16 @@
 var path = require('path')
 var active = require('../build/activeProject');
 module.exports = {
-	
+
   //网站模块名，例如 http://192.168.0.216:8089/module/app/initlayer.html 中的 
   //【views】，默认为views，修改这里的配置的同时，也要同时重命名/src/views的这个文件夹名称  
-  moduleName:'page', 
+  moduleName: 'page',
   build: {
     env: require('./prod.env'),
     index: path.resolve(__dirname, '../dist/index.html'),
-    assetsRoot: path.resolve(__dirname, '../../'),
+    assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: active,
-    // assetsPublicPath: '../../',
+    // assetsPublicPath: '/mm/',
     productionSourceMap: false,
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
@@ -27,24 +27,40 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
-    port: 8070,
+    port: 8060,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api':{
-        target:'http://zhushou.xtest.tech',
-        changeOrigin:true,
-        pathRewrite:{
-            '/api':''
+      '/app/': {
+        target: 'http://zc.dev.bxd365.com',
+        changeOrigin: true,
+        pathRewrite: {
+          // '/api':'/app'
         }
-     }
+      },
+      '/api/': {
+        target: 'http://zc.dev.bxd365.com',
+        changeOrigin: true,
+        pathRewrite: {}
+      },
+      '/html/': {
+        target: 'http://zc.dev.bxd365.com',
+        changeOrigin: true,
+        pathRewrite: {}
+      }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
     // (https://github.com/webpack/css-loader#sourcemaps)
     // In our experience, they generally work as expected,
     // just be aware of this issue when enabling this option.
-    cssSourceMap: false
+    cssSourceMap: false,
+    useEslint: true,
+    // If true, eslint errors and warnings will also be shown in the error overlay
+    // in the browser.
+    showEslintErrorsInOverlay: false,
+    errorOverlay: true,
+    notifyOnErrors: true,
   }
 }

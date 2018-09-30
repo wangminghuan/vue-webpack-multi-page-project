@@ -65,8 +65,9 @@ img, fieldset {
 ul, ol,li {
     list-style:none
 }
-i, em, address {
-    font-style:normal
+i, em, address,b {
+    font-style:normal;
+    font-weight: normal;
 }
 a {
     color:inherit;
@@ -78,6 +79,8 @@ hr,legend{
 img,embed,object,audio,video {
   height: auto;
   max-width: 100%;
+ vertical-align:top;
+    display:block
 }
 iframe {
     width:0;

@@ -8,9 +8,11 @@ var CopyWebpackPlugin = require('copy-webpack-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-var env = process.env.NODE_ENV === 'testing'
-  ? require('../config/test.env')
-  : config.build.env
+var activeProject = require('./activeProject');
+console.log(activeProject)
+var env = process.env.NODE_ENV === 'testing' ?
+  require('../config/test.env') :
+  config.build.env
 var webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
@@ -22,7 +24,7 @@ var webpackConfig = merge(baseWebpackConfig, {
   output: {
     path: config.build.assetsRoot,
     filename: utils.assetsPath('../[name].min.js'),
-    chunkFilename: utils.assetsPath('../[id].min.js')
+    chunkFilename: utils.assetsPath('./chunks/[id].min.js?v=' + new Date().getTime())
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -31,7 +33,9 @@ var webpackConfig = merge(baseWebpackConfig, {
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-        warnings: false
+        warnings: false,
+        drop_debugger: true, //去除打包后(生产环境)的debugger
+        drop_console: true, //去除打包后(生产环境)的console.log
       },
       sourceMap: true
     }),
@@ -45,22 +49,22 @@ var webpackConfig = merge(baseWebpackConfig, {
     // generate dist index.html with correct asset hash for caching.
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
-   /* new HtmlWebpackPlugin({
-      filename: process.env.NODE_ENV === 'testing'
-        ? 'index.html'
-        : config.build.index,
-      template: 'index.html',
-      inject: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
-        // more options:
-        // https://github.com/kangax/html-minifier#options-quick-reference
-      },
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency'
-    }),*/
+    /* new HtmlWebpackPlugin({
+       filename: process.env.NODE_ENV === 'testing'
+         ? 'index.html'
+         : config.build.index,
+       template: 'index.html',
+       inject: true,
+       minify: {
+         removeComments: true,
+         collapseWhitespace: true,
+         removeAttributeQuotes: true
+         // more options:
+         // https://github.com/kangax/html-minifier#options-quick-reference
+       },
+       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+       chunksSortMode: 'dependency'
+     }),*/
     // split vendor js into its own file
     /*new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
@@ -80,9 +84,9 @@ var webpackConfig = merge(baseWebpackConfig, {
     // new webpack.optimize.CommonsChunkPlugin({
     //   name: 'vendor',
     //   chunks: chunks,
-	  // 	minChunks: 4 || chunks.length 
+    // 	minChunks: 4 || chunks.length 
     // }),
-	/*
+    /*
     // copy custom static assets
     new CopyWebpackPlugin([
       {
@@ -91,9 +95,13 @@ var webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])*/
+    //将不在渲染中的图片拷贝到打包后的文件夹
 
-   
-
+    // new CopyWebpackPlugin([{
+    //   from: path.resolve(__dirname, '../src/page/' + activeProject + "/img/copy"),
+    //   to: utils.assetsPath('img/[name].[ext]'),
+    //   ignore: ['.*']
+    // }])
   ]
 })
 
@@ -118,6 +126,7 @@ if (config.build.productionGzip) {
 if (config.build.bundleAnalyzerReport) {
   var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+  console.log("打包完毕！")
 }
 
 //构建生成多页面的HtmlWebpackPlugin配置，主要是循环生成
@@ -131,7 +140,7 @@ if (config.build.bundleAnalyzerReport) {
 //     inject: true,              // js插入位置
 // 	hash:true
 //   };
- 
+
 //   webpackConfig.plugins.push(new HtmlWebpackPlugin(conf));
 // }
 

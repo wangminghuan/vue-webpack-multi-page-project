@@ -1,176 +1,374 @@
-## 使用前注意事项
+
+
+## 一、使用前注意事项
 
 1、直接使用 `cnpm`可能会导致依赖不正确。强烈建议给 `npm` 设置 taobao 的 registry。
 
 `npm install --registry=https://registry.npm.taobao.org`
 
-2、如果你遇到 `$t` 报错问题，先删除 `node_modules`文件夹后再重装依赖。
+2、如果你遇到运行失败报错问题，一般是因为node-sass模块没安装上，该模块需要翻墙才可以，请自行翻墙重新安装 `npm i node-sass --save`。
 
-3、新建页面，需重新`npm run dev`才可以正常访问新建的页面。
+3、新建项目，需重新`npm run dev --你的文件夹名称`才可以正常访问新建的页面。（新建项目步奏请参见第二部分说明）
 
-4、`npm run dev`将会自动在浏览器打开页面，如未正常打开，请访问完整的路径`http:// localhost:8091/views/home/list.html`
+4、`npm run dev --文件夹名称`将会自动在浏览器打开页面，如未正常打开，请访问完整的路径`http://localhost:8070/文件夹名称/index.html`
+
+5. 在localhost本地服务器下可以通过设置反向代理请求任何域名的请求，这对前后端分离开发非常有帮助！！，具体请修改config/index.js中的此处：
+以后端请求接口为 http://zc.dev.bxd365.com/api/xxx 为例，这样设置
+
+	    proxyTable: {
+	          '/api/':{    
+	            target:'http://zc.dev.bxd365.com',
+	            changeOrigin:true,
+	            pathRewrite:{
+	                // '/api':'/app'  //此处为重定向的设置，即将http://zc.dev.bxd365.com/api/xx的请求重定向到http://zc.dev.bxd365.com/app/xx;一般情况下不需要开启；
+	            }
+	        }
+	        },
+
+异步请求我们在代码中正常写即可（axios为例：）
+
+    this.$axios.post('/api/head',{
+      page:1
+    }).then((res)=>{
+          console.log(res)
+    })
+开发环境联调无误后，打包提交到svn即可！！！！
+## 二、新建项目
+> 本项目支持单页（SPA）模式开发，也支持多页项目开发（多个html）。  
+
+### 1. 单页项目  
+#### demo-spa 项目结构
+
+		├─index
+		|   ├─App.vue  ## 入口组件
+		|   ├─index.html ## 模板文件
+		|   ├─index.js   ## 入口js
+		|   ├─components
+		|   |     ├─detail.vue  ## 详情组件
+		|   |     ├─error.vue  ## 错误组件
+		|   |     ├─index.vue  ## 首页组件
+		|   |     └list.vue   ## 列表组件
+		├─img           ## 图片资源目录
+		|  ├─down_01.jpg   
+		|  ├─copy     ## 不在项目中引用但需要上线的，构建工具会自动复制一份合并到dist的img下
+		|  |  └share.jpg
+
+通过 `npm run dev --demo-spa` 启动本地环境  
+通过 `npm run build --demo-spa`  打包代码（会在dist目录下生成一个`demo-spa`文件夹）
+
+#### 打包之后的代码引用示例：
+
+		
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+		  <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width">
+		  <meta name="format-detection" content="telephone=no">
+		  <meta name="format-detection" content="email=no">
+			<title>demo-index</title>
+			<script type="text/javascript">
+		    !function(e){var t={};t.resizeEvt="orientationchange"in window?"orientationchange":"resize",t.Html=e.getElementsByTagName("html")[0],t.widthProportion=function(){var n=Number((e.body&&e.body.clientWidth||t.Html.offsetWidth)/10);return n>76.8?76.8:n<32?32:n},t.changePage=function(){t.Html.setAttribute("style","font-size:"+t.widthProportion()+"px"),t.correctPx()},t.correctPx=function(){var e=document.documentElement,n=e.clientWidth;if(n&&!(n>768)){var i=document.createElement("div");i.style.width="10rem",i.style.height="0",t.Html.appendChild(i);var o=n,d=i.clientWidth/o;1!==d&&(e.style.fontSize=n/10/d+"px"),t.Html.removeChild(i)}},t.changePage(),document.addEventListener&&(window.addEventListener(t.resizeEvt,t.changePage,!1),document.addEventListener("DOMContentLoaded",t.changePage,!1))}(document)
+		      window.resourceBaseUrl = 'http://s29.bxdins.cn/static/crowdsource_apph5/'; //线上和开发环境路径
+		  </script>
+		    <link type="text/css" rel="stylesheet" href="http://s29.bxdins.cn/static/crowdsource_apph5/demo-spa/index.min.css?v=1537864984" />
+		    <script type="text/javascript" src="http://s29.bxdins.cn/static/common/js/vue.min.js?v=1537864984"></script>
+		    <script type="text/javascript" src="http://s29.bxdins.cn/static/common/js/sign.min.js?v=1537864984"></script> 
+		</head>
+		<body>
+		<div id="app"></div>
+		<script type="text/javascript" src="http://s29.bxdins.cn/static/crowdsource_apph5/demo-spa/index.min.js?v=1537864984"></script>
+		</body>
+		</html>
+
+因为测试与线上资源路径不同，所以都通过全局的`resourceBaseUrl`进行拼接加载  
 
 
-## 前言
-`vue2.0`上线已经有一段时间了，现在`vue2.1`也都已经发布了，是时候来更新基于vue的多页面脚手架了。
+### 2. 多页项目
+#### demo-mpa 项目结构
 
-相信用vue的童鞋，很多一部分在用于spa（单页面）项目，也不排除传统的多页面项目，我们就用vue开发了多页面的webapp，相对于spa开发效率更高，使用单页面或者多页面，最终还是看项目的需求啦。
+		├─list            ## 列表页
+		|  ├─list.html    ## 模板文件
+		|  ├─list.js      ## 入口文件
+		|  └listApp.vue   ## 入口组件
+		├─index           ## 首页页
+		|   ├─index.html
+		|   ├─index.js    
+		|   └indexApp.vue 
+		├─img             ## 图片资源目录
+		|  ├─down_01.jpg
+		|  ├─copy        ## 不在项目中引用但需要上线的，构建工具会自动复制一份合并到dist的img下
+		|  |  └share.jpg
+		├─detail          ## 详情页
+		|   ├─detail.html
+		|   ├─detail.js
+		|   └detailApp.vue
 
-这一次我们基于`vuejs2+webpack2+vuxui2`(好222的项目)重新发布了全新的vue脚手架，同时还支持二级目录，以解决页面比较多时，便于归类查找的问题。基于webpack2，构建速度高。ajax获取数据，使用`axios`，当然还有其他的优化，咱们先看看demo呗。
+通过 `npm run dev --demo-mpa` 启动本地环境  
+通过 `npm run build --demo-mpa`  打包代码（会在dist目录下生成一个`demo-mpa`文件夹）
 
-demo地址：
-http://v.lanchenglv.com/demo/vue2-cli-vux2-multe-page/views/home/list.html
+#### 打包之后的代码引用示例：
 
-github地址：
-https://github.com/bluefox1688/vue-cli-multi-page
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+		  <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width">
+		  <meta name="format-detection" content="telephone=no">
+		  <meta name="format-detection" content="email=no">
+			<title>demo-index</title>
+			<script type="text/javascript">
+		    !function(e){var t={};t.resizeEvt="orientationchange"in window?"orientationchange":"resize",t.Html=e.getElementsByTagName("html")[0],t.widthProportion=function(){var n=Number((e.body&&e.body.clientWidth||t.Html.offsetWidth)/10);return n>76.8?76.8:n<32?32:n},t.changePage=function(){t.Html.setAttribute("style","font-size:"+t.widthProportion()+"px"),t.correctPx()},t.correctPx=function(){var e=document.documentElement,n=e.clientWidth;if(n&&!(n>768)){var i=document.createElement("div");i.style.width="10rem",i.style.height="0",t.Html.appendChild(i);var o=n,d=i.clientWidth/o;1!==d&&(e.style.fontSize=n/10/d+"px"),t.Html.removeChild(i)}},t.changePage(),document.addEventListener&&(window.addEventListener(t.resizeEvt,t.changePage,!1),document.addEventListener("DOMContentLoaded",t.changePage,!1))}(document)
+		      window.resourceBaseUrl = 'http://s29.bxdins.cn/static/crowdsource_apph5/'; //线上和开发环境路径
+		  </script>
+		  <!-- 页面css -->
+		    <link type="text/css" rel="stylesheet" href="http://s29.bxdins.cn/static/crowdsource_apph5/demo-mpa/index.min.css?v=1537864984" />
+		    <!-- 签名函数 -->
+		    <script type="text/javascript" src="http://s29.bxdins.cn/static/common/js/vue.min.js?v=1537864984"></script>
+		    <!-- vue依赖 -->
+		    <script type="text/javascript" src="http://s29.bxdins.cn/static/common/js/sign.min.js?v=1537864984"></script> 
+		</head>
+		<body>
+		<div id="app"></div>
+		<!-- 页面js -->
+		<script type="text/javascript" src="http://s29.bxdins.cn/static/crowdsource_apph5/demo-mpa/index.min.js?v=1537864984"></script>
+		</body>
+		</html>
+因为测试与线上资源路径不同，所以都通过全局的`resourceBaseUrl`进行拼接加载  
 
-** 此版仅支持vu2.0，如果需要vue1.0多页面脚手架，请访问分支 **
-https://github.com/bluefox1688/vue-cli-multi-page/tree/master 
-
-## 2.0的主要功能
-
- 1. 全局统一使用的模块`Lib.js`库
- 2. 支持字体图标
- 3. 构建时，增加对css打包的支持
- 4. 提取公共模块
- 5. 多页面可使用vue-router2路由
- 6. 可自定义页面模块名，例如 http:// localhost:8091/`views`/home/list.html，`views`就是我们线上的模块名，1.0版只能固定的
- 7. 支持二级目录，便于归类，1.0版本暂时仅支持一级目录
- 8. 模块下静态文件可直接调用
- 9. 发送ajax请求，使用`axios`库，简单封装了一个库，为了减少学习成本，封装参数基本与`JQ ajax`一致，如果不需要可直接删除
- 10. 整合了vue最流行的UI框架，`vuxui2.x`，`github star` 已接近`8K`了，组件非常全面，并且作者一直有维护，从`0.x`版本我就开始有使用了，具体了解更多，请访问官网 https://vux.li
- 11. 基于`webpack2`，更高的构建速度，包体积更小，全面支持`ES6 Modules`
- 12. 热更新，效率提升神器呀
- 13. 支持`Less`css预处理
- 14. 获取多页面的url参数的方法
- 15. 全局注册vue全局过滤器的方法
-
-## Build Setup
-clone到本地仓之后，自行`npm **`，都是老司机了，这里也不重复了。
+## 存在问题(单页模式和多页模式同时存在)：  
+1. 一个目录下只能有一个js文件，因为多个入口是通过遍历每个文件夹下的js文件来查找出来的。
+2. 不引用vue-router的时候css背景图路径在生产环境会出错，可参见`demo-mpa/index/indexApp` 中require解决方案（如果引用了vue-router则可忽略该问题）
 
 
-``` bash
-# 安装依赖
-npm install
+## 使用流程
 
-# 调试环境 serve with hot reload at localhost:8091
-npm run dev
 
-# 生产环境 build for production with minification
-npm run build
+		# 安装依赖
+		npm install
+		
+		# 调试环境 serve with hot reload at localhost:8091
+		npm run dev --你的文件夹名称
+		
+		# 生产环境 build for production with minification
+		npm run build --你的文件夹名称
 
-```
-本地默认访问端口为8091，需要更改的童鞋请到项目目录文件`config/index.js`修改。
+
+本地默认访问端口为8070，需要更改的童鞋请到项目目录文件`config/index.js`修改。
 
 
 ## 目录结构
-``` 
-webpack
- |---build
- |---src
-     |---assets    #资源
-     |---css/common.css  #css
-     |---font/    #字体图标
-     |---js/common.js    #自己定义的全局通用事件
-     |---js/conf.js    #项目的配置
-     |---js/Lib.js    #暴露接口给组件调用
-     |---js/vueFilter.js    #注册vue的全局过滤器	
- |---components 组件
-     |---Button.vue  按钮组件
-     |---hb-head.vue  head组件
-|---views    #各个页面模块，模块名可以自定义哦！
-     |---home    #一级目录
-        |---list    #二级目录
-             |---list.html
-             |---list.js
-             |---listApp.vue
-     |---vuxDemo    #一级目录
-        |---button    #二级目录
-             |---button.html
-             |---button.js
-             |---buttonApp.vue	
-        |---calendar    #二级目录
-             |---calendar.html
-             |---calendar.js
-             |---calendarApp.vue		 
-......
-     
-  ```
-此次2.0版本也优化也可以自定义模块的名称，1.0版时，无法自定义模块名。
 
-例如 http:// localhost:8091/`views`/home/list.html，`views`就是我们线上的模块名，如需修改请到项目目录文件config/index.js修改`moduleName`参数，修改这里的配置的同时，也要同时重命名`/src/views`的这个文件夹名称，是否会报错的。
-  
-  从目录结构上，各种组件、页面模块、资源等都按类新建了文件夹，方便我们储存文件。其实我们所有的文件，最主要都是放在`views`文件夹里，以文件夹名为html的名称。
-例如
+		├─.babelrc
+		├─.gitignore
+		├─.postcssrc.js
+		├─package.json
+		├─README.md
+		├─该项目为vue多页面项目,使用说明请看readme.txt
+		├─test
+		|  ├─unit
+		|  |  ├─.eslintrc
+		|  |  ├─index.js
+		|  |  ├─karma.conf.js
+		|  |  ├─specs
+		|  |  |   └Hello.spec.js
+		|  ├─e2e
+		|  |  ├─nightwatch.conf.js
+		|  |  ├─runner.js
+		|  |  ├─specs
+		|  |  |   └test.js
+		|  |  ├─custom-assertions
+		|  |  |         └elementCount.js
+		├─src
+		|  ├─page
+		|  |  ├─termsSearch   //条款查询
+		|  |  |      ├─icon.jpg
+		|  |  |      ├─search.png
+		|  |  |      ├─list           //公司列表
+		|  |  |      |  ├─list.html
+		|  |  |      |  ├─list.js
+		|  |  |      |  └listApp.vue
+		|  |  |      ├─index          //条款查询首页组件
+		|  |  |      |   ├─index.html
+		|  |  |      |   ├─index.js
+		|  |  |      |   └indexApp.vue
+		|  |  ├─signJS   //lib下签名函数源码
+		|  |  |   ├─index
+		|  |  |   |   ├─index.html
+		|  |  |   |   └index.js
+		|  |  ├─shopCard
+		|  |  |    ├─index
+		|  |  |    |   ├─index.html
+		|  |  |    |   ├─index.js
+		|  |  |    |   └indexApp.vue
+		|  |  |    ├─img
+		|  |  |    |  ├─bg_01.png
+		|  |  |    |  ├─bg_02.png
+		|  |  |    |  ├─bg_03.png
+		|  |  |    |  ├─bg_04.png
+		|  |  |    |  ├─bg_05.png
+		|  |  |    |  └bg_06.png
+		|  |  ├─posterAssistant  //海报助手项目
+		|  |  |        ├─index     //首页
+		|  |  |        |   ├─index.html   
+		|  |  |        |   ├─index.js        //入口js
+		|  |  |        |   ├─indexApp.vue    //主组件
+		|  |  |        |   ├─itemSlide.vue   //tab切换组件
+		|  |  |        |   └perview.vue   
+		|  |  |        ├─img
+		|  |  |        |  ├─close.png
+		|  |  |        |  ├─down.png
+		|  |  |        |  ├─hascol.png
+		|  |  |        |  ├─nocol.png
+		|  |  |        |  └share.png
+		|  |  |        ├─collection           //收藏页
+		|  |  |        |     ├─colApp.vue      //主组件
+		|  |  |        |     ├─collection.html 
+		|  |  |        |     ├─collection.js   //入口js
+		|  |  |        |     └perview.vue     //预览组件
+		|  |  ├─insurProducts
+		|  |  |       ├─index
+		|  |  |       |   ├─app.vue
+		|  |  |       |   ├─index.html
+		|  |  |       |   ├─index.js
+		|  |  |       |   ├─list.vue
+		|  |  |       |   ├─search.vue
+		|  |  |       |   └select.vue
+		|  |  ├─headline
+		|  |  |    ├─subject
+		|  |  |    |    ├─subject.html
+		|  |  |    |    ├─subject.js
+		|  |  |    |    └subjectApp.vue
+		|  |  |    ├─search
+		|  |  |    |   ├─search.html
+		|  |  |    |   ├─search.js
+		|  |  |    |   └searchApp.vue
+		|  |  |    ├─patent
+		|  |  |    |   ├─patent.html
+		|  |  |    |   ├─patent.js
+		|  |  |    |   └patentApp.vue
+		|  |  |    ├─detail
+		|  |  |    |   ├─detail.html
+		|  |  |    |   ├─detail.js
+		|  |  |    |   ├─detailActicle.vue
+		|  |  |    |   └detailApp.vue
+		|  |  |    ├─comment
+		|  |  |    |    ├─comment.html
+		|  |  |    |    ├─comment.js
+		|  |  |    |    └commentApp.vue
+		|  |  |    ├─assets
+		|  |  |    |   ├─img
+		|  |  |    |   |  ├─s01.png
+		|  |  |    |   |  ├─tool_icons.png
+		|  |  |    |   |  └top_btn.png
+		|  |  |    |   ├─components
+		|  |  |    |   |     ├─goTop.vue
+		|  |  |    |   |     ├─inputComment.vue
+		|  |  |    |   |     ├─itemActicleList.vue
+		|  |  |    |   |     ├─itemCommentList.vue
+		|  |  |    |   |     └showToast.vue
+		|  |  ├─highGralityServer    //优质服务商
+		|  |  |    ├─index     //主文件
+		|  |  |    |    ├─index.html
+		|  |  |    |    ├─index.js
+		|  |  |    |    └indexApp.vue
+		|  |  |    ├─img
+		|  |  |        ├─location-icon.png    //定位图标
+		|  |  |        └logobg.png    //服务商固定背景图
+		|  |  |
+		|  |  |
+		|  |  ├─workpass    //助手活动-->活动地址:http://mall.bxd365.com/html/zsWorkpass(注:由于活动页面中没有注入customjs,所以把活动的入口放在了商城之中)
+		|  |  |             //(接上↑:活动的真实地址是:http://bxd.9956.cn/huodong/workpass/index#/)
+		|  |  |
+		|  |  ├─demo
+		|  |  |  ├─list
+		|  |  |  |  ├─list.html
+		|  |  |  |  ├─list.js
+		|  |  |  |  └listApp.vue
+		|  |  |  ├─index
+		|  |  |  |   ├─index.html
+		|  |  |  |   ├─index.js
+		|  |  |  |   └indexApp.vue
+		|  |  |  ├─img
+		|  |  |  |  └down_01.jpg
+		|  |  |  ├─detail
+		|  |  |  |   ├─detail.html
+		|  |  |  |   ├─detail.js
+		|  |  |  |   └detailApp.vue
+		|  |  ├─dailyRecord               //日志日报
+		|  |  |      ├─search                //日志搜索
+		|  |  |      |   ├─search.html
+		|  |  |      |   ├─search.js
+		|  |  |      |   └searchApp.vue
+		|  |  |      ├─index                 //日志首页
+		|  |  |      |   ├─index.html
+		|  |  |      |   ├─index.js
+		|  |  |      |   ├─indexApp.vue
+		|  |  |      |   └swipeItem.vue
+		|  |  |      ├─img
+		|  |  |      |  ├─add.png
+		|  |  |      |  ├─add1.png
+		|  |  |      |  ├─close-3@3x.png
+		|  |  |      |  ├─search.png
+		|  |  |      |  ├─up.png
+		|  |  |      |  └zhaopian@3x.png
+		|  |  |      ├─detail                //日志详情
+		|  |  |      |   ├─detail.html
+		|  |  |      |   ├─detail.js
+		|  |  |      |   └detailApp.vue
+		|  |  |      ├─creat
+		|  |  |      |   ├─creat.html
+		|  |  |      |   ├─creat.js
+		|  |  |      |   ├─creatApp.vue
+		|  |  |      |   └tree.vue
+		|  ├─components
+		|  |     ├─goTop.vue
+		|  |     └~tpl.vue
+		|  ├─common
+		|  |   ├─pxToRem.scss
+		|  |   ├─reset.css
+		|  |   └utils.js
+		|  ├─assets
+		|  |   ├─js
+		|  |   | ├─common.js
+		|  |   | ├─conf.js
+		|  |   | ├─Lib.js
+		|  |   | └vueFilter.js
+		|  |   ├─font
+		|  |   |  ├─iconfont.eot
+		|  |   |  ├─iconfont.svg
+		|  |   |  ├─iconfont.ttf
+		|  |   |  └iconfont.woff
+		|  |   ├─css
+		|  |   |  └common.css
+		├─dist
+		|  ├─home
+		|  |  ├─detail.min.css
+		|  |  ├─detail.min.js
+		|  |  ├─index.min.css
+		|  |  ├─index.min.js
+		|  |  ├─list.min.css
+		|  |  ├─list.min.js
+		|  |  ├─img
+		|  |  |  ├─000.ca2075e.jpg
+		|  |  |  └down_01.ca2075e.jpg
+		├─config
+		|   ├─dev.env.js
+		|   ├─index.js
+		|   ├─prod.env.js
+		|   └test.env.js
+		├─build
+		|   ├─activeProject.js
+		|   ├─build.js
+		|   ├─check-versions.js
+		|   ├─dev-client.js
+		|   ├─dev-server.js
+		|   ├─utils.js
+		|   ├─vue-loader.conf.js
+		|   ├─webpack.base.conf.js
+		|   ├─webpack.dev.conf.js
+		|   ├─webpack.prod.conf.js
+		|   └webpack.test.conf.js
 
-``` stylus
-|---vuxDemo    一级目录
- |---button    二级目录
-   |---button.html
-   |---button.js
-   |---buttonApp.vue	
-```
-就是我们访问时的地址：
+参照 demo-spa 或 demo-mpa 项目可完成多数需求
 
-``` stylus
-http://localhost:8091/views/vuxDemo/button.html
-```
-
-在`view`里二级文件夹，一个文件夹就是一个html，`js``vue``html` 都统一放在当前文件夹里，当然你也可以继续放其他的资源，例如css、图片等，webpack会打包到当前模块里。
-
-还有一点要注意的，所有的目录都要求为二级，不能一个目录下为一级，另一个目录下有二级。
-
-## Lib.js库使用
-
-我们做多页面开发，那肯定会涉及到全局都能调用的公共库，或者是把别人封装的库也一起打包在全局公共模块里。
-
-如果看过源码的童鞋，在`*.vue`页面里，都统一import了一个文件
-
-```
-import Lib from 'assets/js/Lib';
-```
-这就是全局统一公共模块，我们先看看`Lib.js`里的代码
-
-``` bash
-# 导入全局的css
-require('assets/css/common.css');
-# 导入全局的站点配置文件
-import C from './conf';
-# 导入全局的共用事件
-import M from './common';
-
-export default{
-	M,C
-}
-
-```
-在`Lib.js`的`M`、`C`都是事件调用简写。例如我们现在想调用APP的名称，在`.vue`里可以这么写
-
-``` bash
-import Lib from 'assets/js/Lib';
-Lib.C.appname;  #蓝橙绿
-```
-只需要在`*.vue`里导入`import Lib from 'assets/js/Lib';'`，就可以使用全局模块了。
-当然你还可以在Lib做一些程序判断，例如权限判断等。
-
-## 公共模块
-我们通常会把常用的库都打包成公共模块，`CommonsChunkPlugin` 插件，是一个可选的用于建立一个独立文件(又称作 chunk)的功能，这个文件包括多个入口 chunk 的公共模块。最终合成的文件能够在最开始的时候加载一次，便存起来到缓存中供后续使用。这个带来速度上的提升，因为浏览器会迅速将公共的代码从缓存中取出来，而不是每次访问一个新页面时，再去加载一个更大的文件。
-
-不同的项目，使用到的插件库数量有所不同，我们可以调整`minChunks`以达到公共模块的大小，文件路径为`/build/webpack.prod.conf.js`，cart+F查找`minChunks`参数，`minChunks: 4` 意思代表为至少被4个页面引用了，就打包进入公共模块，具体的使用方法，可以再详细了解`webpack`中文文档。http://www.css88.com/doc/webpack2/plugins/commons-chunk-plugin/
-
-## 存在的问题
-1、多页面可以使用vue-router路由，但是无法使用按需加载，即懒加载，研究过在多页面的路由里按需加载，但从未成功，如果有童鞋研究成功了，可以发lssues一起交流哈。
-
-2、暂时还没有做css自动补前缀
-
-3、......
-
-## 结束言
-此vue多页面脚手架，并不局限于vux ui 框架，但现在的UI框架都要自己对webpack简单配置下。
-
-生命在于折腾，理想还是要有的，万一实现了呢。
-
-有问题随时Issues哈！
-
-## 文章首发地址：
-http://lanchenglv.com/article/2017/0409/vue2-webpack2-cli-vux2-multe-page.html
